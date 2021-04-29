@@ -38,6 +38,7 @@ HEALTH_2 = 75
 HEALTH_3 = 100
 HEALTH_PLAYER = 100
 
+
 class Bullet:
 
     def __init__(self, x, y, img):
@@ -322,6 +323,7 @@ def main():
 def main_menu():
     title_font = pygame.font.SysFont("comicsans", 100)
     quit = False
+    
     while not(quit):
         WIN.blit(BG, (0,0))
         WIN.blit(TITLE, (WIDTH/2 - TITLE.get_width()/2, 30))
