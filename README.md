@@ -20,7 +20,7 @@ The player loses health when hit by enemy bullets or ships.
 
 Health:
 -------
-Player: 100
+Player: 100 \n
 Red ship: 50
 Blue ship: 75
 Yellow ship: 100
