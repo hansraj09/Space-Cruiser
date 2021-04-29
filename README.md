@@ -5,11 +5,11 @@ A lot of features coming soon...
 
 Controls:
 ---------
-W: Move up
-A: Move left
-S: Move down
-D: Move right
-Space bar: Shoot
+-W: Move up
+-A: Move left
+-S: Move down
+-D: Move right
+-Space bar: Shoot
 
 
 Instructions:
@@ -20,12 +20,12 @@ The player loses health when hit by enemy bullets or ships.
 
 Health:
 -------
-Player: 100 \n
-Red ship: 50
-Blue ship: 75
-Yellow ship: 100
-Player bullet: -30
-Enemy bullet: -10
+-Player: 100 
+-Red ship: 50
+-Blue ship: 75
+-Yellow ship: 100
+-Player bullet: -30
+-Enemy bullet: -10
 
 
 
@@ -38,15 +38,15 @@ https://user-images.githubusercontent.com/44376147/116621755-bc834a80-a954-11eb-
 
 Coming soon:
 ------------
-Boss battles
-Score system
-Level system
-Improved main menu
-Pause menu
-Powerups
-Alternate bullets
-Alternate shooting styles
-Alternate ships
-Parkour mode
+-Boss battles
+-Score system
+-Level system
+-Improved main menu
+-Pause menu
+-Powerups
+-Alternate bullets
+-Alternate shooting styles
+-Alternate ships
+-Parkour mode
 
 and much more...
