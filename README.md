@@ -1,2 +1,3 @@
 # Space-Cruiser
-Space shooter game built in pygame
+Built using pygame in python, this is a personalised version of the popular game space shooter.
+A lot of features including boss battles and levels coming soon...
