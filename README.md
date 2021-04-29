@@ -6,9 +6,13 @@ A lot of features coming soon...
 Controls:
 ---------
 -W: Move up
+
 -A: Move left
+
 -S: Move down
+
 -D: Move right
+
 -Space bar: Shoot
 
 
@@ -21,10 +25,15 @@ The player loses health when hit by enemy bullets or ships.
 Health:
 -------
 -Player: 100 
+
 -Red ship: 50
+
 -Blue ship: 75
+
 -Yellow ship: 100
+
 -Player bullet: -30
+
 -Enemy bullet: -10
 
 
