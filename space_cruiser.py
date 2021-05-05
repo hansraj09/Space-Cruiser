@@ -23,6 +23,7 @@ ENEMY1 = pygame.image.load(os.path.join("assets", "enemy164.png"))
 ENEMY2 = pygame.image.load(os.path.join("assets", "enemy264.png"))
 ENEMY3 = pygame.image.load(os.path.join("assets", "enemy364.png"))
 PLAYER = pygame.image.load(os.path.join("assets", "player64.png"))
+BOSS = pygame.image.load(os.path.join("assets", "boss64.png"))
 BULLET1 = pygame.image.load(os.path.join("assets", "bullet1.png"))
 BULLET2 = pygame.image.load(os.path.join("assets", "bullet2.png"))
 BULLET3 = pygame.image.load(os.path.join("assets", "bullet3.png"))
@@ -37,6 +38,7 @@ HEALTH_1 = 50
 HEALTH_2 = 75
 HEALTH_3 = 100
 HEALTH_PLAYER = 100
+BOSS_HEALTH = 500
 
 class Bullet:
 
@@ -175,6 +177,65 @@ class Enemy(Ship):
             bullet = Bullet(self.x - 20, self.y, self.bullet_img)
             self.bullets.append(bullet)
             self.cooldown = self.COOLDOWN
+    
+    
+
+class Boss(Ship):
+
+    def __init__(self, x, y, health):
+        super().__init__(x, y, health)
+        self.max_health = self.health
+        self.ship_img = BOSS
+        self.bullet_img = BULLET1
+        self.bullets_left = []
+        self.bullets_right = []
+        self.mask = pygame.mask.from_surface(self.ship_img)
+
+    def draw(self, window):
+        super().draw(window)
+        self.healthbar(window)
+
+    def healthbar(self, window):
+        pygame.draw.rect(window, (255, 0, 0), (self.x, self.y + self.get_height() + 10, self.get_width(), 5))
+        pygame.draw.rect(window, (0, 255, 0), (self.x, self.y + self.get_height() + 10, self.get_width() * (self.health / self.max_health), 5))
+
+    def draw_bullets(self, window):
+        for bullet in self.bullets_left:
+            bullet.draw(window)
+        for bullet in self.bullets_right:
+            bullet.draw(window)
+
+    def move(self, speedX, speedY):
+        self.y += speedY
+        self.x += speedX
+
+    def shoot(self):
+        if self.cooldown == 0:
+            bullet_r = Bullet(self.x, self.y, self.bullet_img)
+            bullet_l = Bullet(self.x + 20, self.y, self.bullet_img)
+            self.bullets_left.append(bullet_l)
+            self.bullets_right.append(bullet_r)
+            self.cooldown = self.COOLDOWN
+    
+    def move_bullets(self, speed, obj):
+        self.cooldown_check()
+        for bullet in self.bullets_left:
+            bullet.move(speed)
+            if bullet.out_of_bounds():
+                self.bullets_left.remove(bullet)
+            elif bullet.collision(obj):
+                obj.health -= 10
+                self.bullets_left.remove(bullet)
+        for bullet in self.bullets_right:
+            bullet.move(speed)
+            if bullet.out_of_bounds():
+                self.bullets_right.remove(bullet)
+            elif bullet.collision(obj):
+                obj.health -= 10
+                self.bullets_right.remove(bullet)
+
+
+
 
 
 # check if actual objects are colliding, not just the boxes
