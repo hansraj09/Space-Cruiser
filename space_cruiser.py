@@ -23,7 +23,7 @@ ENEMY1 = pygame.image.load(os.path.join("assets", "enemy164.png"))
 ENEMY2 = pygame.image.load(os.path.join("assets", "enemy264.png"))
 ENEMY3 = pygame.image.load(os.path.join("assets", "enemy364.png"))
 PLAYER = pygame.image.load(os.path.join("assets", "player64.png"))
-BOSS = pygame.image.load(os.path.join("assets", "boss64.png"))
+BOSS = pygame.transform.rotate(pygame.image.load(os.path.join("assets", "boss64.png")), 180)
 BULLET1 = pygame.image.load(os.path.join("assets", "bullet1.png"))
 BULLET2 = pygame.image.load(os.path.join("assets", "bullet2.png"))
 BULLET3 = pygame.image.load(os.path.join("assets", "bullet3.png"))
@@ -143,6 +143,7 @@ class Player(Ship):
                             # objs.remove(obj)
                         if bullet in self.bullets:
                             self.bullets.remove(bullet)
+    
         
 
 class Enemy(Ship):
@@ -189,10 +190,15 @@ class Boss(Ship):
         self.bullet_img = BULLET1
         self.bullets_left = []
         self.bullets_right = []
+        self.dead = False
         self.mask = pygame.mask.from_surface(self.ship_img)
 
     def draw(self, window):
-        super().draw(window)
+        window.blit(self.ship_img, (self.x, self.y))
+        for bullet in self.bullets_left:
+            bullet.draw(window)
+        for bullet in self.bullets_right:
+            bullet.draw(window)
         self.healthbar(window)
 
     def healthbar(self, window):
@@ -211,8 +217,8 @@ class Boss(Ship):
 
     def shoot(self):
         if self.cooldown == 0:
-            bullet_r = Bullet(self.x, self.y, self.bullet_img)
-            bullet_l = Bullet(self.x + 20, self.y, self.bullet_img)
+            bullet_r = Bullet(self.x - 10, self.y, self.bullet_img)
+            bullet_l = Bullet(self.x + 30, self.y, self.bullet_img)
             self.bullets_left.append(bullet_l)
             self.bullets_right.append(bullet_r)
             self.cooldown = self.COOLDOWN
@@ -236,12 +242,10 @@ class Boss(Ship):
 
 
 
-
-
 # check if actual objects are colliding, not just the boxes
 def collide(object1, object2):
-    offset_x = object2.x - object1.x 
-    offset_y = object2.y - object1.y
+    offset_x = round(object2.x - object1.x) 
+    offset_y = round(object2.y - object1.y)
     return object1.mask.overlap(object2.mask, (offset_x, offset_y)) != None
 
 
@@ -250,10 +254,13 @@ def main():
     FPS = 60
     player_speed = 6
     enemy_speed = 2
+    boss_speed = 3
     bullet_speed = 5
     wave_size = 0
     wave = 0
     lives = 3
+    boss_battle = False
+    boss = None
 
     # fonts 
     main_font = pygame.font.SysFont("comicsans", 40)
@@ -271,13 +278,17 @@ def main():
     lost = False
     lost_count = 0
 
+
     def redraw_window():
         WIN.blit(BG, (0, bgY))
         WIN.blit(BG, (0, bgY2))
 
         # labels
         lives_label = main_font.render(f"LIVES: {lives}", True, (255, 255, 255))
-        wave_label = main_font.render(f"WAVE: {wave}", True, (255, 255, 255))
+        if boss_battle:
+            wave_label = main_font.render("WAVE: BOSS BATTLE", True, (255, 255, 255))
+        else:
+            wave_label = main_font.render(f"WAVE: {wave}", True, (255, 255, 255))
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(wave_label, (WIDTH - wave_label.get_width() - 10, 10))
@@ -293,6 +304,12 @@ def main():
                 enemy.draw(WIN)
             else:
                 enemy.draw_bullets(WIN)
+        
+        if boss_battle:
+            if not(boss.dead):
+                boss.draw(WIN)
+            else:
+                boss.draw_bullets(WIN)
 
         pygame.display.update()
 
@@ -332,13 +349,43 @@ def main():
         redraw_window()
 
         # check if no enemies left and add new wave
-        if len(enemies) == 0:
+        if len(enemies) == 0 and not boss_battle:
             wave += 1
-            wave_size += 2
-            for i in range(wave_size):
-                enemy = Enemy(random.randrange(20, WIDTH - 70), random.randrange(-1500, -100), random.choice(["1", "2", "3"]))
-                enemies.append(enemy)
+            if wave % 3 == 0:
+                boss_battle = True
+                boss = Boss(WIDTH/2 - BOSS.get_width()/2, 50, BOSS_HEALTH)
+            else:
+                wave_size += 2
+                for i in range(wave_size):
+                    enemy = Enemy(random.randrange(20, WIDTH - 70), random.randrange(-1500, -100), random.choice(["1", "2", "3"]))
+                    enemies.append(enemy)
+
+
+        # boss battle !
+        if boss_battle:
+            # move boss randomly
+            boss_X = random.choice([-2 * boss_speed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2 * boss_speed])
+            boss_Y = random.choice([-boss_speed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, boss_speed])
+            if boss.x + boss_X > 0 and boss.x + boss_X < WIDTH and boss.y + boss_Y > 0 and boss.y + boss.y < 450:
+                boss.move(boss_X, boss_Y)
+            
+            boss.move_bullets(bullet_speed, player)
+
+            if not(boss.dead):
+                if random.randrange(0, 2*10) == 1:
+                    boss.shoot()
+
+            # if player collides with boss
+            if collide(boss, player) and not(boss.dead):
+                    player.health -= 20
+                    boss.health -= 30 
+            
+            # check if boss is dead and no boss bullets on screen to go to next wave
+            if boss.dead and len(boss.bullets_left) == 0 and len(boss.bullets_right) == 0:
+                boss_battle = False
+
         
+
           # check for quit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -377,7 +424,10 @@ def main():
             elif enemy.y + enemy.get_height() > HEIGHT:
                 enemies.remove(enemy)
 
-        player.move_bullets(-bullet_speed, enemies)
+        if boss_battle:
+            player.move_bullets(-bullet_speed, [boss])
+        else:
+             player.move_bullets(-bullet_speed, enemies)
 
 
 def main_menu():
