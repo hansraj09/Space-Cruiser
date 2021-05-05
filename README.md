@@ -2,6 +2,10 @@
 This is a personalised version of the popular game space shooter, built using pygame in python.
 A lot of features coming soon...
 
+Updates:
+--------
+Basic Boss Battle added! (06/05/21)
+
 
 Controls:
 ---------
@@ -21,10 +25,13 @@ Instructions:
 The player must prevent the enemy ships from reaching the bottom of the screen by shooting them.
 The player starts with 3 lives, and loses a life for each enemy hitting the bottom of the screen or when health reaches 0.
 The player loses health when hit by enemy bullets or ships.
+Boss battles occur on every 3rd wave.
 
 Health:
 -------
 Player: 100 
+
+Boss: 500
 
 Red ship: 50
 
@@ -47,7 +54,7 @@ https://user-images.githubusercontent.com/44376147/116621755-bc834a80-a954-11eb-
 
 Coming soon:
 ------------
-Boss battles
+Boss battles (basic version added, more to come)
 
 Score system
 
