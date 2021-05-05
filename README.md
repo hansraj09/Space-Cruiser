@@ -6,6 +6,9 @@ Updates:
 --------
 Basic Boss Battle added! (06/05/21)
 
+![boss battle](https://user-images.githubusercontent.com/44376147/117210974-78d38980-ae09-11eb-9e99-96bdd60db020.jpg)
+
+
 
 Controls:
 ---------
